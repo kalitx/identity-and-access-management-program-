@@ -1,4 +1,4 @@
-// This program is written in C# and will run on Windows
+//This program is written in C# and will run on Windows
 
 using System;
 using System.Security.Cryptography;
