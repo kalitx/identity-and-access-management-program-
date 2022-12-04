@@ -1,0 +1,57 @@
+// This program is written in C# and will run on Windows
+
+using System;
+using System.Security.Cryptography;
+
+namespace IdentityAndAccessManagement
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Create a new instance of the RSA cryptographic provider
+            // used for encryption and decryption of user data
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+            
+            // Generate a new public/private key pair
+            rsa.GenerateKeyPair();
+            
+            // Store the public and private key in the local system
+            string publicKey = rsa.ToXmlString(false);
+            string privateKey = rsa.ToXmlString(true);
+            
+            // Prompt the user to enter their username and password
+            Console.Write("Username: ");
+            string username = Console.ReadLine();
+            Console.Write("Password: ");
+            string password = Console.ReadLine();
+            
+            // Encrypt the user's credentials using the RSA public key
+            byte[] encryptedUsername = rsa.Encrypt(System.Text.Encoding.Unicode.GetBytes(username), false);
+            byte[] encryptedPassword = rsa.Encrypt(System.Text.Encoding.Unicode.GetBytes(password), false);
+            
+            // Store the encrypted credentials in the local system
+            string encryptedUsernameString = Convert.ToBase64String(encryptedUsername);
+            string encryptedPasswordString = Convert.ToBase64String(encryptedPassword);
+            
+            // Decrypt the user's credentials using the RSA private key
+            byte[] decryptedUsername = rsa.Decrypt(Convert.FromBase64String(encryptedUsernameString), false);
+            byte[] decryptedPassword = rsa.Decrypt(Convert.FromBase64String(encryptedPasswordString), false);
+            
+            // Compare the decrypted credentials with the user's input
+            string decryptedUsernameString = System.Text.Encoding.Unicode.GetString(decryptedUsername);
+            string decryptedPasswordString = System.Text.Encoding.Unicode.GetString(decryptedPassword);
+            
+            if (username == decryptedUsernameString && password == decryptedPasswordString)
+            {
+                // Access granted
+                Console.WriteLine("Access granted!");
+            }
+            else
+            {
+                // Access denied
+                Console.WriteLine("Access denied!");
+            }
+        }
+    }
+}
